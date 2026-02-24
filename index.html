@@ -1,1015 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text-to-Speech Generator</title>
-    <meta name="theme-color" content="#667eea">
-    <meta name="description" content="Convert text to speech with different voices and emotions">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="TTS Generator">
-    
-    <!-- Favicon & Icons -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    <link rel="manifest" href="/manifest.json">
-    
-    <!-- Microsoft Tiles -->
-    <meta name="msapplication-TileColor" content="#667eea">
-    <meta name="msapplication-TileImage" content="/icons/ms-icon-144x144.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --background: hsl(250, 20%, 8%);
-            --foreground: hsl(0, 0%, 98%);
-            --card: hsl(250, 15%, 12%);
-            --card-foreground: hsl(0, 0%, 98%);
-            --primary: hsl(263, 70%, 58%);
-            --primary-foreground: hsl(0, 0%, 100%);
-            --secondary: hsl(250, 15%, 18%);
-            --secondary-foreground: hsl(0, 0%, 98%);
-            --muted: hsl(250, 15%, 20%);
-            --muted-foreground: hsl(250, 10%, 60%);
-            --accent: hsl(280, 80%, 65%);
-            --border: hsl(250, 15%, 22%);
-            --destructive: hsl(0, 84%, 60%);
-            --radius: 0.75rem;
-            --gradient-primary: linear-gradient(135deg, hsl(263, 70%, 58%) 0%, hsl(280, 80%, 55%) 100%);
-            --gradient-bg: linear-gradient(180deg, hsl(250, 20%, 8%) 0%, hsl(260, 25%, 12%) 100%);
-            --glow-primary: 0 0 40px hsla(263, 70%, 58%, 0.3);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--gradient-bg);
-            min-height: 100vh;
-            color: var(--foreground);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            max-width: 56rem;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            background: hsla(263, 70%, 58%, 0.1);
-            border: 1px solid hsla(263, 70%, 58%, 0.2);
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .header h1 {
-                font-size: 3rem;
-            }
-        }
-
-        .text-gradient {
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header p {
-            color: var(--muted-foreground);
-            max-width: 32rem;
-            margin: 0 auto;
-        }
-
-        /* Glass Card */
-        .glass {
-            background: hsla(250, 15%, 12%, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid hsla(250, 15%, 22%, 0.5);
-            border-radius: 1rem;
-            padding: 1.5rem;
-        }
-
-        @media (min-width: 768px) {
-            .glass {
-                padding: 2rem;
-            }
-        }
-
-        .form-section {
-            margin-bottom: 2rem;
-        }
-
-        .form-section:last-of-type {
-            margin-bottom: 0;
-        }
-
-        /* Labels */
-        label, .label {
-            display: block;
-            font-weight: 600;
-            color: var(--foreground);
-            margin-bottom: 0.75rem;
-            font-size: 0.875rem;
-        }
-
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .char-count {
-            font-weight: 400;
-            color: var(--muted-foreground);
-        }
-
-        /* Textarea */
-        textarea {
-            width: 100%;
-            min-height: 120px;
-            padding: 0.75rem 1rem;
-            background: hsla(250, 15%, 18%, 0.5);
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            color: var(--foreground);
-            font-family: inherit;
-            font-size: 0.875rem;
-            resize: vertical;
-            transition: border-color 0.3s;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        textarea::placeholder {
-            color: var(--muted-foreground);
-        }
-
-        /* Voice Cards Grid */
-        .voice-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
-        }
-
-        @media (min-width: 768px) {
-            .voice-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .voice-card {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 1rem;
-            border-radius: var(--radius);
-            border: 2px solid var(--border);
-            background: hsla(250, 15%, 18%, 0.5);
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-        }
-
-        .voice-card:hover {
-            border-color: hsla(263, 70%, 58%, 0.5);
-            background: var(--secondary);
-        }
-
-        .voice-card.selected {
-            border-color: var(--primary);
-            background: hsla(263, 70%, 58%, 0.1);
-            box-shadow: var(--glow-primary);
-        }
-
-        .voice-card .name {
-            font-weight: 600;
-            color: var(--foreground);
-        }
-
-        .voice-card .desc {
-            font-size: 0.875rem;
-            color: var(--muted-foreground);
-            margin-top: 0.25rem;
-        }
-
-        /* Emotion Pills */
-        .emotion-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .emotion-pill {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.625rem 1rem;
-            border-radius: 9999px;
-            border: 2px solid var(--border);
-            background: hsla(250, 15%, 18%, 0.5);
-            color: var(--muted-foreground);
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .emotion-pill:hover {
-            border-color: hsla(263, 70%, 58%, 0.5);
-            color: var(--foreground);
-        }
-
-        .emotion-pill.selected {
-            border-color: var(--primary);
-            background: hsla(263, 70%, 58%, 0.2);
-            color: var(--foreground);
-            box-shadow: var(--glow-primary);
-        }
-
-        .emotion-pill .emoji {
-            font-size: 1.125rem;
-        }
-
-        /* Seed Options */
-        .seed-row {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        @media (min-width: 640px) {
-            .seed-row {
-                flex-direction: row;
-                align-items: flex-end;
-            }
-        }
-
-        .switch-group {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .switch {
-            position: relative;
-            width: 44px;
-            height: 24px;
-            background: var(--secondary);
-            border-radius: 9999px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .switch.active {
-            background: var(--primary);
-        }
-
-        .switch::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            background: var(--foreground);
-            border-radius: 50%;
-            transition: transform 0.3s;
-        }
-
-        .switch.active::after {
-            transform: translateX(20px);
-        }
-
-        .seed-input-group {
-            flex: 1;
-            max-width: 16rem;
-        }
-
-        .seed-input-group label {
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: hsla(250, 15%, 18%, 0.5);
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            color: var(--foreground);
-            font-family: inherit;
-            font-size: 0.875rem;
-            transition: border-color 0.3s;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        input[type="number"]:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Submit Button */
-        .submit-btn {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.875rem 2rem;
-            background: var(--gradient-primary);
-            color: var(--primary-foreground);
-            border: none;
-            border-radius: var(--radius);
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: var(--glow-primary);
-            margin-top: 2rem;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 0 60px hsla(263, 70%, 58%, 0.5);
-        }
-
-        .submit-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .submit-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .spinner {
-            animation: spin 1s linear infinite;
-        }
-
-        /* Error Message */
-        .error-box {
-            display: none;
-            background: hsla(0, 84%, 60%, 0.1);
-            border: 1px solid hsla(0, 84%, 60%, 0.5);
-            border-radius: var(--radius);
-            padding: 1rem;
-            margin-top: 2rem;
-        }
-
-        .error-box.show {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .error-box svg {
-            width: 20px;
-            height: 20px;
-            color: var(--destructive);
-            flex-shrink: 0;
-        }
-
-        .error-box p {
-            color: var(--destructive);
-            font-weight: 500;
-        }
-
-        /* Audio Player */
-        .audio-result {
-            display: none;
-            margin-top: 2rem;
-        }
-
-        .audio-result.show {
-            display: block;
-        }
-
-        .audio-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .audio-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px hsla(263, 70%, 58%, 0.3); }
-            50% { box-shadow: 0 0 40px hsla(263, 70%, 58%, 0.5); }
-        }
-
-        .audio-icon svg {
-            width: 20px;
-            height: 20px;
-            color: var(--primary-foreground);
-        }
-
-        .audio-info h3 {
-            font-weight: 600;
-            color: var(--foreground);
-        }
-
-        .audio-info p {
-            font-size: 0.875rem;
-            color: var(--muted-foreground);
-        }
-
-        audio {
-            width: 100%;
-            height: 48px;
-            border-radius: var(--radius);
-            margin-bottom: 1rem;
-            filter: invert(1) hue-rotate(180deg);
-        }
-
-        .download-btn {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.625rem 1rem;
-            background: transparent;
-            color: var(--foreground);
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            font-family: inherit;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .download-btn:hover {
-            background: var(--secondary);
-            border-color: hsla(263, 70%, 58%, 0.5);
-        }
-
-        .download-btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* Examples Table */
-        .examples-section {
-            margin-top: 2rem;
-        }
-
-        .examples-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border);
-            background: hsla(250, 15%, 18%, 0.3);
-            border-radius: var(--radius) var(--radius) 0 0;
-        }
-
-        .examples-header svg {
-            width: 16px;
-            height: 16px;
-            color: var(--muted-foreground);
-        }
-
-        .examples-header span {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--muted-foreground);
-        }
-
-        .examples-table {
-            width: 100%;
-            border-collapse: collapse;
-            overflow-x: auto;
-            display: block;
-        }
-
-        @media (min-width: 768px) {
-            .examples-table {
-                display: table;
-            }
-        }
-
-        .examples-table th,
-        .examples-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .examples-table th {
-            font-weight: 600;
-            color: var(--foreground);
-            font-size: 0.875rem;
-            white-space: nowrap;
-        }
-
-        .examples-table td {
-            font-size: 0.875rem;
-            color: var(--muted-foreground);
-        }
-
-        .examples-table td.prompt {
-            font-family: 'JetBrains Mono', monospace;
-            max-width: 300px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .examples-table td.voice {
-            color: var(--accent);
-        }
-
-        .examples-table tbody tr {
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .examples-table tbody tr:hover {
-            background: hsla(263, 70%, 58%, 0.05);
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            padding: 1rem 1.5rem;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast h4 {
-            font-weight: 600;
-            color: var(--foreground);
-            margin-bottom: 0.25rem;
-        }
-
-        .toast p {
-            font-size: 0.875rem;
-            color: var(--muted-foreground);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text To Speech Generator</title>
+
+<link rel="manifest" href="manifest.json">
+
+<script src="https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#141e30,#243b55);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    animation:fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+.container{
+    width:100%;
+    max-width:550px;
+    background:#ffffff;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.3);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+    color:#243b55;
+}
+
+textarea{
+    width:100%;
+    height:120px;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid #ddd;
+    font-size:16px;
+    resize:none;
+    margin-bottom:15px;
+}
+
+select, input[type="number"]{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    margin-bottom:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    background:#243b55;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+    margin-bottom:10px;
+}
+
+button:hover{
+    background:#141e30;
+}
+
+.stop-btn{
+    background:#dc3545;
+}
+
+.stop-btn:hover{
+    background:#bb2d3b;
+}
+
+.download-btn{
+    background:#198754;
+}
+
+.download-btn:hover{
+    background:#146c43;
+}
+
+.audio-result{
+    margin-top:15px;
+    display:none;
+}
+
+.audio-result.show{
+    display:block;
+}
+
+footer{
+    text-align:center;
+    font-size:14px;
+    margin-top:15px;
+    color:#777;
+}
+
+.spinner{
+    border:3px solid #fff;
+    border-top:3px solid transparent;
+    border-radius:50%;
+    width:18px;
+    height:18px;
+    display:inline-block;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg);}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="badge">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-                AI-Powered Voice Synthesis
-            </div>
-            <h1><span class="text-gradient">Text-to-Speech</span> Generator</h1>
-            <p>Transform your text into natural-sounding speech with customizable voices and emotions.</p>
-        </header>
 
-        <!-- Main Form -->
-        <form id="ttsForm" class="glass">
-            <!-- Prompt -->
-            <div class="form-section">
-                <div class="label-row">
-                    <label for="prompt">Your Text</label>
-                    <span class="char-count"><span id="charCount">54</span>/200 characters</span>
-                </div>
-                <textarea id="prompt" placeholder="Enter the text you want to convert to speech...">Hi hello, welcome to the text-to-speech generator!</textarea>
-            </div>
+<div class="container">
+<h1>🎙 Text To Speech</h1>
 
-            <!-- Voice Selection -->
-            <div class="form-section">
-                <label>Select Voice</label>
-                <div class="voice-grid" id="voiceGrid">
-                    <div class="voice-card selected" data-voice="alloy">
-                        <span class="name">Alloy</span>
-                        <span class="desc">Friendly & Warm</span>
-                    </div>
-                    <div class="voice-card" data-voice="echo">
-                        <span class="name">Echo</span>
-                        <span class="desc">Deep & Resonant</span>
-                    </div>
-                    <div class="voice-card" data-voice="fable">
-                        <span class="name">Fable</span>
-                        <span class="desc">Storytelling</span>
-                    </div>
-                    <div class="voice-card" data-voice="onyx">
-                        <span class="name">Onyx</span>
-                        <span class="desc">Bold & Strong</span>
-                    </div>
-                    <div class="voice-card" data-voice="nova">
-                        <span class="name">Nova</span>
-                        <span class="desc">Clear & Bright</span>
-                    </div>
-                    <div class="voice-card" data-voice="shimmer">
-                        <span class="name">Shimmer</span>
-                        <span class="desc">Smooth & Melodic</span>
-                    </div>
-                </div>
-            </div>
+<textarea id="prompt" placeholder="Enter your text..."></textarea>
 
-            <!-- Emotion Selection -->
-            <div class="form-section">
-                <label>Emotion Style</label>
-                <div class="emotion-grid" id="emotionGrid">
-                    <button type="button" class="emotion-pill selected" data-emotion="happy">
-                        <span class="emoji">😊</span><span>Happy</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="excited">
-                        <span class="emoji">🎉</span><span>Excited</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="neutral">
-                        <span class="emoji">😐</span><span>Neutral</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="sad">
-                        <span class="emoji">😢</span><span>Sad</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="angry">
-                        <span class="emoji">😠</span><span>Angry</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="calm">
-                        <span class="emoji">🧘</span><span>Calm</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="confident">
-                        <span class="emoji">💪</span><span>Confident</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="curious">
-                        <span class="emoji">🤔</span><span>Curious</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="sarcastic">
-                        <span class="emoji">😏</span><span>Sarcastic</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="serious">
-                        <span class="emoji">🎯</span><span>Serious</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="tender">
-                        <span class="emoji">❤️</span><span>Tender</span>
-                    </button>
-                    <button type="button" class="emotion-pill" data-emotion="worried">
-                        <span class="emoji">😰</span><span>Worried</span>
-                    </button>
-                </div>
-            </div>
+<select id="emotion">
+<option value="Neutral">Neutral</option>
+<option value="Happy">Happy</option>
+<option value="Sad">Sad</option>
+<option value="Angry">Angry</option>
+</select>
 
-            <!-- Seed Options -->
-            <div class="form-section">
-                <div class="seed-row">
-                    <div class="switch-group">
-                        <div class="switch active" id="randomSeedSwitch"></div>
-                        <label style="margin: 0; cursor: pointer;" onclick="toggleRandomSeed()">Use Random Seed</label>
-                    </div>
-                    <div class="seed-input-group">
-                        <label for="specificSeed">Specific Seed</label>
-                        <input type="number" id="specificSeed" value="12345" disabled>
-                    </div>
-                </div>
-            </div>
+<input type="number" id="seed" placeholder="Seed (optional)" />
 
-            <!-- Submit Button -->
-            <button type="submit" class="submit-btn" id="submitBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                <span id="btnText">Generate Audio</span>
-            </button>
-        </form>
+<button id="generateBtn">
+<span id="btnText">Generate Speech</span>
+</button>
 
-        <!-- Error Box -->
-        <div class="error-box" id="errorBox">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-            <p id="errorText"></p>
-        </div>
+<button class="stop-btn" id="stopBtn">Stop Audio</button>
 
-        <!-- Audio Result -->
-        <div class="audio-result glass" id="audioResult">
-            <div class="audio-header">
-                <div class="audio-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-                </div>
-                <div class="audio-info">
-                    <h3>Audio Generated</h3>
-                    <p id="statusText"></p>
-                </div>
-            </div>
-            <audio id="audioPlayer" controls></audio>
-            <button type="button" class="download-btn" id="downloadBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                Download Audio
-            </button>
-        </div>
+<div class="audio-result" id="audioResult">
+<audio id="audioPlayer" controls style="width:100%;margin-bottom:10px;"></audio>
+<button class="download-btn" id="downloadBtn">Download Audio</button>
+<button class="download-btn" id="copyBtn">Copy Text</button>
+</div>
 
-        <!-- Examples Table -->
-        <div class="examples-section glass">
-            <div class="examples-header">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 4h10"/><path d="M11 8h7"/><path d="M11 12h4"/></svg>
-                <span>Examples</span>
-            </div>
-            <table class="examples-table">
-                <thead>
-                    <tr>
-                        <th>Prompt (Max 200 chars)</th>
-                        <th>Voice</th>
-                        <th>Emotion Style</th>
-                        <th class="text-center">Use Random Seed</th>
-                        <th class="text-right">Specific Seed</th>
-                    </tr>
-                </thead>
-                <tbody id="examplesBody">
-                    <tr data-prompt="Hello there! This is a test of the text-to-speech system." data-voice="alloy" data-emotion="neutral" data-random="false" data-seed="12345">
-                        <td class="prompt">Hello there! This is a test of the text-to-speech system.</td>
-                        <td class="voice">alloy</td>
-                        <td>neutral</td>
-                        <td class="text-center">false</td>
-                        <td class="text-right font-mono">12345</td>
-                    </tr>
-                    <tr data-prompt="Surely *you* wouldn't want *that*. [laughs]" data-voice="shimmer" data-emotion="sarcastic" data-random="true" data-seed="12345">
-                        <td class="prompt">Surely *you* wouldn't want *that*. [laughs]</td>
-                        <td class="voice">shimmer</td>
-                        <td>sarcastic and mocking</td>
-                        <td class="text-center">true</td>
-                        <td class="text-right font-mono">12345</td>
-                    </tr>
-                    <tr data-prompt="[sobbing] I am feeling... [sighs] a bit down today [cry]" data-voice="onyx" data-emotion="sad" data-random="true" data-seed="662437">
-                        <td class="prompt">[sobbing] I am feeling... [sighs] a bit down today [cry]</td>
-                        <td class="voice">onyx</td>
-                        <td>sad and depressed, with stammering</td>
-                        <td class="text-center">true</td>
-                        <td class="text-right font-mono">662437</td>
-                    </tr>
-                    <tr data-prompt="This technology is absolutely amazing!" data-voice="nova" data-emotion="excited" data-random="true" data-seed="12345">
-                        <td class="prompt">This technology is absolutely amazing!</td>
-                        <td class="voice">nova</td>
-                        <td>excited and joyful</td>
-                        <td class="text-center">true</td>
-                        <td class="text-right font-mono">12345</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+<footer>
+Made with ❤️ by Govind
+</footer>
 
-    <!-- Toast -->
-    <div class="toast" id="toast">
-        <h4 id="toastTitle"></h4>
-        <p id="toastMessage"></p>
-    </div>
+</div>
 
-    <script type="module">
-        import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+<script>
+const promptInput = document.getElementById("prompt");
+const emotionSelect = document.getElementById("emotion");
+const seedInput = document.getElementById("seed");
+const generateBtn = document.getElementById("generateBtn");
+const btnText = document.getElementById("btnText");
+const audioResult = document.getElementById("audioResult");
+const audioPlayer = document.getElementById("audioPlayer");
+const stopBtn = document.getElementById("stopBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const copyBtn = document.getElementById("copyBtn");
 
-        // State
-        let selectedVoice = "alloy";
-        let selectedEmotion = "happy";
-        let useRandomSeed = true;
-        let isProcessing = false;
+let currentAudioURL = null;
 
-        // DOM Elements
-        const form = document.getElementById("ttsForm");
-        const promptInput = document.getElementById("prompt");
-        const charCount = document.getElementById("charCount");
-        const voiceGrid = document.getElementById("voiceGrid");
-        const emotionGrid = document.getElementById("emotionGrid");
-        const randomSeedSwitch = document.getElementById("randomSeedSwitch");
-        const specificSeedInput = document.getElementById("specificSeed");
-        const submitBtn = document.getElementById("submitBtn");
-        const btnText = document.getElementById("btnText");
-        const errorBox = document.getElementById("errorBox");
-        const errorText = document.getElementById("errorText");
-        const audioResult = document.getElementById("audioResult");
-        const audioPlayer = document.getElementById("audioPlayer");
-        const statusText = document.getElementById("statusText");
-        const downloadBtn = document.getElementById("downloadBtn");
-        const examplesBody = document.getElementById("examplesBody");
+generateBtn.addEventListener("click", async () => {
 
-        // Toast function
-        function showToast(title, message) {
-            const toast = document.getElementById("toast");
-            document.getElementById("toastTitle").textContent = title;
-            document.getElementById("toastMessage").textContent = message;
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 3000);
-        }
+    const text = promptInput.value.trim();
+    if(!text){
+        alert("Please enter text");
+        return;
+    }
 
-        // Character count
-        promptInput.addEventListener("input", () => {
-            const text = promptInput.value.slice(0, 200);
-            promptInput.value = text;
-            charCount.textContent = text.length;
-        });
+    btnText.innerHTML = '<span class="spinner"></span> Generating...';
+    generateBtn.disabled = true;
 
-        // Voice selection
-        voiceGrid.addEventListener("click", (e) => {
-            const card = e.target.closest(".voice-card");
-            if (card) {
-                document.querySelectorAll(".voice-card").forEach(c => c.classList.remove("selected"));
-                card.classList.add("selected");
-                selectedVoice = card.dataset.voice;
-            }
-        });
+    try{
+        const client = await window.gradio_client.Client.connect("YOUR_API_ENDPOINT");
 
-        // Emotion selection
-        emotionGrid.addEventListener("click", (e) => {
-            const pill = e.target.closest(".emotion-pill");
-            if (pill) {
-                document.querySelectorAll(".emotion-pill").forEach(p => p.classList.remove("selected"));
-                pill.classList.add("selected");
-                selectedEmotion = pill.dataset.emotion;
-            }
-        });
+        const result = await client.predict("/predict", [
+            text,
+            emotionSelect.value,
+            seedInput.value || null
+        ]);
 
-        // Random seed toggle
-        window.toggleRandomSeed = function() {
-            useRandomSeed = !useRandomSeed;
-            randomSeedSwitch.classList.toggle("active", useRandomSeed);
-            specificSeedInput.disabled = useRandomSeed;
-        };
+        const audioURL = result.data[0];
+        currentAudioURL = audioURL;
 
-        randomSeedSwitch.addEventListener("click", window.toggleRandomSeed);
+        audioPlayer.src = audioURL;
+        audioResult.classList.add("show");
+        audioResult.scrollIntoView({behavior:"smooth"});
 
-        // Examples table click
-        examplesBody.addEventListener("click", (e) => {
-            const row = e.target.closest("tr");
-            if (row) {
-                promptInput.value = row.dataset.prompt;
-                charCount.textContent = row.dataset.prompt.length;
+    }catch(error){
+        alert("Error generating speech");
+        console.error(error);
+    }
 
-                // Select voice
-                document.querySelectorAll(".voice-card").forEach(c => {
-                    c.classList.toggle("selected", c.dataset.voice === row.dataset.voice);
-                });
-                selectedVoice = row.dataset.voice;
+    btnText.innerHTML = "Generate Speech";
+    generateBtn.disabled = false;
+});
 
-                // Select emotion
-                document.querySelectorAll(".emotion-pill").forEach(p => {
-                    p.classList.toggle("selected", p.dataset.emotion === row.dataset.emotion);
-                });
-                selectedEmotion = row.dataset.emotion;
+stopBtn.addEventListener("click", ()=>{
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+});
 
-                // Set seed options
-                useRandomSeed = row.dataset.random === "true";
-                randomSeedSwitch.classList.toggle("active", useRandomSeed);
-                specificSeedInput.disabled = useRandomSeed;
-                specificSeedInput.value = row.dataset.seed;
+downloadBtn.addEventListener("click", async ()=>{
+    if(!currentAudioURL) return;
 
-                showToast("Example loaded", "Form filled with example values. Click Generate to create audio!");
-            }
-        });
+    const response = await fetch(currentAudioURL);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
 
-        // Download audio
-        downloadBtn.addEventListener("click", () => {
-            const link = document.createElement("a");
-            link.href = audioPlayer.src;
-            link.download = "generated-speech.mp3";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "tts-audio.mp3";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
 
-        // Form submission
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
+copyBtn.addEventListener("click", ()=>{
+    navigator.clipboard.writeText(promptInput.value);
+    alert("Text copied!");
+});
 
-            if (isProcessing) return;
+if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('service-worker.js');
+}
+</script>
 
-            const prompt = promptInput.value.trim();
-            if (!prompt) {
-                showToast("Error", "Please enter some text to convert to speech.");
-                return;
-            }
-
-            isProcessing = true;
-            submitBtn.disabled = true;
-            errorBox.classList.remove("show");
-            audioResult.classList.remove("show");
-
-            // Update button
-            btnText.innerHTML = '<svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Generating Audio...';
-
-            try {
-                const client = await Client.connect("NihalGazi/Text-To-Speech-Unlimited");
-
-                const result = await Promise.race([
-                    client.predict("/text_to_speech_app", {
-                        prompt: prompt.slice(0, 200),
-                        voice: selectedVoice,
-                        emotion: selectedEmotion,
-                        use_random_seed: useRandomSeed,
-                        specific_seed: parseInt(specificSeedInput.value) || 12345,
-                        api_key_input: "",
-                    }),
-                    new Promise((_, reject) =>
-                        setTimeout(() => reject(new Error("Request timeout - please try again")), 60000)
-                    )
-                ]);
-
-                const [audioData, status] = result.data;
-
-                statusText.textContent = status;
-
-                if (audioData && audioData.url) {
-                    audioPlayer.src = audioData.url;
-                } else if (typeof audioData === "string") {
-                    audioPlayer.src = audioData;
-                }
-
-                audioResult.classList.add("show");
-                showToast("Success!", "Your audio has been generated successfully.");
-
-            } catch (error) {
-                errorText.textContent = error.message || "Failed to generate audio";
-                errorBox.classList.add("show");
-                showToast("Generation Failed", error.message);
-            } finally {
-                isProcessing = false;
-                submitBtn.disabled = false;
-                btnText.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg> Generate Audio';
-            }
-        });
-
-        // Initialize char count
-        charCount.textContent = promptInput.value.length;
-    </script>
 </body>
 </html>
