@@ -1,8 +1,16 @@
-# Text-to-Speech-Generator
-
 # 🗣️ Text-to-Speech-Generator
 
 Welcome to **Text-to-Speech-Generator**! This project enables you to easily convert written text into spoken words using different voices and emotions, all through a simple and modern web interface.
+
+---
+
+## 🌐 Live Demo
+
+🔗 **Live Website:**  
+👉 https://texttospeech10.netlify.app/
+
+🔗 **GitHub Repository:**  
+👉 https://github.com/govindchauhan-s/Text-to-Speech-Generator
 
 ---
 
@@ -33,7 +41,7 @@ To run **Text-to-Speech-Generator** locally, follow these steps:
     ```
 
 2. **Serve the files locally:**  
-   You can use [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) in VS Code, or run a simple Python server:
+   You can use Live Server in VS Code, or run a simple Python server:
     ```bash
     python -m http.server
     ```
@@ -46,11 +54,11 @@ To run **Text-to-Speech-Generator** locally, follow these steps:
 
 ## 🚀 Usage
 
-1. **Open** the app in your browser.
-2. **Enter your text** in the input field.
-3. **Choose** your preferred voice and emotion settings.
-4. **Click** the "Generate Speech" button.
-5. **Listen** to your text spoken aloud!
+1. Open the app in your browser.
+2. Enter your text in the input field.
+3. Choose your preferred voice and emotion settings.
+4. Click the "Generate Speech" button.
+5. Listen to your text spoken aloud!
 
 ---
 
@@ -71,7 +79,7 @@ Feel free to open issues for bug reports, ideas, or feature requests!
 ## 📄 License
 
 This project is licensed under the **MIT License**.  
-See the [LICENSE](LICENSE) file for details.
+See the LICENSE file for details.
 
 ---
 
@@ -80,14 +88,14 @@ See the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Files included:**
+## 📁 Files Included
+
 - `index.html`
 - `manifest.json`
 - `service-worker.js`
 - `README.md`
 
+---
+
 ## License
 This project is licensed under the **MIT** License.
-
----
-🔗 GitHub Repo: https://github.com/govindchauhan-s/Text-to-Speech-Generator
